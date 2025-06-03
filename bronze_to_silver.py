@@ -1,3 +1,21 @@
+ def execute_query(self, sql):
+        """
+        Execute SQL query on Iceberg tables using Spark SQL
+        
+        Args:
+            sql (str): SQL query to execute
+            
+        Returns:
+            DataFrame: Result of the SQL query
+        """
+        try:
+            return self.glue.spark.sql(sql)
+        except Exception as e:
+            print(f"Error executing query: {str(e)}")
+            raise
+
+
+==========
 import sys
 from awsglue.utils import getResolvedOptions
 import time
