@@ -1,3 +1,60 @@
+Target Table (my_target_table):
+
+event_id	_created_at	user_id	event_type	data
+1001	2025-06-01	user1	login	{...}
+1002	2025-06-01	user2	purchase	{...}
+1003	2025-06-02	user3	login	{...}
+1004	2025-06-02	user1	logout	{...}
+Temp Table (__temp_silver_updates):
+
+event_id	_created_at	user_id	event_type	data
+1002	2025-06-01	user2	purchase	{...}
+1003	2025-06-02	user3	login	{...}
+1005	2025-06-02	user4	signup	{...}
+1006	2025-06-03	user1	purchase	{...}
+
+
+After executing this merge query, here's what would happen:
+
+Event 1002: MATCHED
+
+Exists in both tables with the same event_id and _created_at
+The row in the target table will be updated (even if the data is identical)
+Event 1003: MATCHED
+
+Exists in both tables with the same event_id and _created_at
+The row in the target table will be updated
+Event 1005: NOT MATCHED
+
+Doesn't exist in the target table
+A new row will be inserted into the target table
+Event 1006: NOT MATCHED
+
+Doesn't exist in the target table
+A new row will be inserted into the target table
+Events 1001 and 1004:
+
+Exist only in the target table
+Will remain unchanged
+Resulting Target Table after merge:
+
+event_id	_created_at	user_id	event_type	data
+1001	2025-06-01	user1	login	{...}
+1002	2025-06-01	user2	purchase	{...} (potentially updated)
+1003	2025-06-02	user3	login	{...} (potentially updated)
+1004	2025-06-02	user1	logout	{...}
+1005	2025-06-02	user4	signup	{...} (new row)
+1006	2025-06-03	user1	purchase	{...} (new row)
+This approach ensures that:
+
+Records are deduplicated based on event_id within each partition (_created_at).
+Existing records are updated if they match on both event_id and _created_at.
+New records are inserted if they don't exist in the target table.
+The partitioning by _created_at is maintained, which is crucial for performance in large datasets.
+
+
+
+==========
 def _generate_merge_query(self, target_table):
     """
     Generate merge query with event_id deduplication, _created_at as partition column,
