@@ -81,43 +81,74 @@ JOB_STARTING: str = "JOB_STARTING"
 JOB_STATUS_TABLE: str = "test_event_b_s_job_run"
 
 
-def perform_merge_operation(source_df, target_identifier):
+def perform_merge_operation(source_df, target_identifier, pk_columns_str):
     """
-    Perform merge operation using _created_at as the merge key
+    Perform merge operation using provided primary key columns for deduplication
+    Args:
+        source_df: Source dataframe
+        target_identifier: Target table identifier
+        pk_columns_str: Comma-separated string of primary key columns (e.g., "_id,_created_at")
     """
     try:
         # Add processing timestamp and optimize partitioning
         source_df = source_df.withColumn("processed_time", current_timestamp())
-        source_df = source_df.repartition(col("_created_at"))
-
-        # Create temporary view for the merge operation
-        source_df.createOrReplaceTempView("source_updates")
-
-        # Construct and execute merge query
-        merge_query = f"""
-        MERGE INTO {target_identifier} t
-        USING (
-            SELECT *,
-            ROW_NUMBER() OVER (
-                PARTITION BY _created_at
-                ORDER BY processed_time DESC
-            ) as row_num
-            FROM source_updates
-            WHERE row_num = 1
-        ) s
-        ON t._created_at = s._created_at
-        WHEN MATCHED THEN UPDATE SET *
-        WHEN NOT MATCHED THEN INSERT *
-        """
-
+        
+        # Create temporary view
+        source_df.createOrReplaceTempView("__temp_silver_updates")
+        
+        # Generate merge query
+        merge_query = _generate_merge_query(pk_columns_str, target_identifier)
+        
+        print(f"Executing merge query with deduplication on columns: {pk_columns_str}")
         etl.session.pro_iceberg.execute_query(merge_query)
-        return True, "Merge completed successfully"
+        return True, "Merge completed successfully with deduplication"
     except Exception as e:
         return False, f"Merge failed: {str(e)}"
     finally:
         # Clean up temporary view
-        etl.session.pro_iceberg.execute_query("DROP VIEW IF EXISTS source_updates")
+        etl.session.pro_iceberg.execute_query("DROP VIEW IF EXISTS __temp_silver_updates")
 
+
+def _generate_merge_query(pk_columns_str, target_table):
+    """
+    Generate merge query with deduplication logic
+    Args:
+        pk_columns_str: Comma-separated string of primary key columns
+        target_table: Target table identifier
+    Returns:
+        str: Generated merge query
+    """
+    # Split the comma-separated string into list and clean whitespace
+    pk_columns = [col.strip() for col in pk_columns_str.split(',')]
+
+    # Generate the PARTITION BY clause
+    partition_by = ', '.join(pk_columns)
+
+    # Generate the JOIN conditions
+    join_conditions = ' AND '.join([f"t.{col} = s.{col}" for col in pk_columns])
+
+    merge_query = f"""
+    WITH deduplicated_source AS (
+        SELECT * 
+        FROM (
+            SELECT *,
+            ROW_NUMBER() OVER (
+                PARTITION BY {partition_by}
+                ORDER BY processed_time DESC
+            ) as row_num
+            FROM __temp_silver_updates
+        )
+        WHERE row_num = 1
+    )
+
+    MERGE INTO {target_table} t
+    USING deduplicated_source s
+    ON {join_conditions}
+    WHEN MATCHED THEN UPDATE SET *
+    WHEN NOT MATCHED THEN INSERT *
+    """
+
+    return merge_query
 
 def query_table(table_name, partition_key_name, partition_key_value):
     """
@@ -308,7 +339,8 @@ def main(event_name: str):
             job_run.target_row_count = t_df.count()
 
             print(f"Performing merge operation on target: {target_identifier}")
-            success, message = perform_merge_operation(t_df, target_identifier)
+            pk_columns = "_id, _created_at"  # Adjust based on your table's primary key
+            success, message = perform_merge_operation(t_df, target_identifier, pk_columns)
 
             if success:
                 job_run.status_message = message
