@@ -1,3 +1,21 @@
+def _generate_merge_query(self, target_table):
+    """
+    Generate merge query with event_id deduplication, _created_at as partition column,
+    and _updated_at for update decisions
+    """
+    merge_query = f"""
+    MERGE INTO {target_table} t
+    USING __temp_silver_updates s
+    ON t.event_id = s.event_id
+    AND t._created_at = s._created_at
+    WHEN MATCHED AND s._updated_at > t._updated_at THEN 
+        UPDATE SET *
+    WHEN NOT MATCHED THEN 
+        INSERT *
+    """
+    return merge_query
+
+============
 def perform_merge_operation(source_df, target_identifier):
     try:
         # Create initial temporary view
