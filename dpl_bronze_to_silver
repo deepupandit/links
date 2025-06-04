@@ -1,3 +1,38 @@
+-- Get the latest snapshot details including operation metrics
+WITH latest_snapshot AS (
+    SELECT 
+        snapshot_id,
+        committed_at,
+        summary['added-records'] as records_added,
+        summary['deleted-records'] as records_deleted,
+        summary['updated-records'] as records_updated
+    FROM "database_name"."table_name$snapshots"
+    ORDER BY committed_at DESC
+    LIMIT 1
+)
+
+-- Get detailed file statistics from manifests
+SELECT 
+    m.status,  -- 'ADDED', 'DELETED', or 'EXISTING'
+    COUNT(*) as file_count,
+    SUM(m.added_rows_count) as total_rows_added,
+    SUM(m.deleted_rows_count) as total_rows_deleted,
+    SUM(m.existing_rows_count) as total_rows_existing
+FROM "database_name"."table_name$manifests" m
+JOIN latest_snapshot s 
+    ON m.snapshot_id = s.snapshot_id
+GROUP BY m.status;
+
+-- Get summary metrics from latest snapshot
+SELECT 
+    snapshot_id,
+    committed_at,
+    records_added,
+    records_deleted,
+    records_updated
+FROM latest_snapshot;
+
+========
 Target Table (my_target_table):
 
 event_id	_created_at	user_id	event_type	data
