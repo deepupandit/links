@@ -1,38 +1,57 @@
+from pyspark.sql.functions import col
 def _generate_merge_query(self, target_table):
     """
-    Generate merge query with metrics tracking
+    Generate merge query
     """
     merge_query = f"""
-    WITH merge_metrics AS (
-        MERGE INTO {target_table} t
-        USING __temp_silver_updates s
-        ON t._created_at = s._created_at
-        WHEN MATCHED THEN 
-            UPDATE SET *
-        WHEN NOT MATCHED THEN 
-            INSERT *
-        THEN RETURN ROW_COUNT(*)
-    )
-    SELECT 
-        SUM(CASE WHEN _merge_action = 'INSERT' THEN 1 ELSE 0 END) as inserted_count,
-        SUM(CASE WHEN _merge_action = 'UPDATE' THEN 1 ELSE 0 END) as updated_count
-    FROM merge_metrics
+    MERGE INTO {target_table} t
+    USING __temp_silver_updates s
+    ON t._created_at = s._created_at
+    WHEN MATCHED THEN 
+        UPDATE SET *
+    WHEN NOT MATCHED THEN 
+        INSERT *
     """
     return merge_query
 
+def get_iceberg_metrics(spark, table_identifier):
+    # Get the latest snapshot ID
+    latest_snapshot = spark.sql(f"SELECT snapshot_id FROM {table_identifier}.snapshots ORDER BY committed_at DESC LIMIT 1").collect()[0][0]
+    
+    # Query the manifests to get accurate metrics
+    metrics = spark.sql(f"""
+    SELECT 
+        operation,
+        SUM(added_files_count) as added_files,
+        SUM(existing_files_count) as existing_files,
+        SUM(deleted_files_count) as deleted_files,
+        SUM(added_rows_count) as added_rows,
+        SUM(existing_rows_count) as existing_rows,
+        SUM(deleted_rows_count) as deleted_rows
+    FROM {table_identifier}.manifests
+    WHERE snapshot_id = {latest_snapshot}
+    GROUP BY operation
+    """).collect()
+    
+    return metrics
+
 def perform_merge_operation(source_df, target_identifier):
-    """
-    Perform merge operation with metrics tracking
-    """
     try:
         # Create temporary view
         source_df.createOrReplaceTempView("__temp_silver_updates")
         
-        # Execute merge and get metrics
-        merge_metrics = etl.session.pro_iceberg.execute_query(_generate_merge_query(target_identifier)).collect()[0]
+        # Execute merge
+        merge_query = self._generate_merge_query(target_identifier)
+        etl.session.pro_iceberg.execute_query(merge_query)
         
-        inserted_count = merge_metrics['inserted_count']
-        updated_count = merge_metrics['updated_count']
+        # Get Iceberg metrics
+        metrics = get_iceberg_metrics(etl.session.pro_iceberg, target_identifier)
+        
+        for m in metrics:
+            if m['operation'] == 'append':
+                inserted_count = m['added_rows']
+            elif m['operation'] == 'overwrite':
+                updated_count = m['added_rows']
         
         print(f"Merge completed: {inserted_count} records inserted, {updated_count} records updated")
         
@@ -41,6 +60,8 @@ def perform_merge_operation(source_df, target_identifier):
         return False, f"Merge failed: {str(e)}"
     finally:
         etl.session.pro_iceberg.execute_query("DROP VIEW IF EXISTS __temp_silver_updates")
+
+
 
 
 ============
