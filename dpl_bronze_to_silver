@@ -1,3 +1,20 @@
+def perform_merge_operation(source_df, target_identifier):
+    try:
+        # Create initial temporary view
+        source_df.createOrReplaceTempView("__temp_source")
+        
+        # Repartition using DISTRIBUTE BY
+        repartition_query = """
+        CREATE OR REPLACE TEMPORARY VIEW __temp_silver_updates AS
+        SELECT *
+        FROM __temp_source
+        DISTRIBUTE BY _created_at
+        """
+        etl.session.pro_iceberg.execute_query(repartition_query)
+        
+        # Rest of the code remains same...
+===========
+
 from pyspark.sql.functions import col
 def _generate_merge_query(self, target_table):
     """
