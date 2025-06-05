@@ -1,0 +1,148 @@
+The Importance of Data Strategy in GenAI
+
+A well-defined data strategy is the foundation for unlocking the transformative power of Generative AI(GenAI). It empowers businesses to leverage GenAI for innovation, efficiency, and growth.This article delves into the importance of revisiting your data strategy for GenAI. We’ll explore the challenges of adapting existing practices to the unique demands of GenAI, the necessity for robust data infrastructure, and the steps to take for a pragmatic and effective data strategy in the GenAI landscape. By prioritizing data engineering and fostering a mature data ecosystem, businesses can unlock the transformative potential of GenAI and propel themselves into a future of innovation and growth.
+In the rapidly advancing landscape of GenAI and Large Language Models (LLMs), the demand for harnessing unstructured data to enhance performance is more pressing than ever. Whether refining models through fine-tuning or pioneering retrieval augmented generation (RAG) systems, the success of these applications pivots on our capacity to unlock the potential of diverse data formats.
+Building GenAI and LLM prototypes may appear straightforward, yet cultivating a robust and sustainable AI practice mandates a nuanced approach to data management and engineering. The challenge lies in adapting established practices to accommodate the array of novel data types and sources utilized by GenAI, all while grappling with uncertain costs and evolving regulatory landscapes.
+Organizations with well-established data practices have traditionally held a competitive edge in machine learning and AI. To navigate the complexities of GenAI, businesses must invest in a sophisticated data infrastructure capable of handling diverse data sources and types, while also mitigating long-term costs and regulatory risks.
+In the landscape of the GenAI era, the construction of a robust data strategy stands not as a choice but as an indispensable necessity akin to laying the foundations and frameworks of a towering edifice. This strategy is a confluence of various critical components, each serving as a pillar in aligning the technological prowess of GenAI with the strategic objectives of the business.
+Elevating your data strategy is, therefore, not merely a response to a trend; it’s an active engagement in shaping your business’s future. GenAI, in this context, is more than a technological marvel; it’s a guiding light toward innovation, efficiency, and growth.
+
+
+Customer interest in driving business value through generative AI is also driving a need to align their data and AI strategy to their business goals. Assisting customers in moving their generative AI workloads from ideation to production requires a solid understanding of customers’ current data and AI maturity. A robust data strategy enables customers to ensure their data is clean, accessible, governed, and performant which is crucial for successful Generative AI systems. Similarly, a strong AI maturity is needed to unleash the potential AI holds to drive growth and new opportunities for the business. According to Accenture, only 12% of companies have advanced AI maturity enough to achieve superior growth and business transformation. These “AI Achievers” attribute nearly 30% of their total revenue to AI, and enjoy 50% greater revenue growth compared with their peers.
+
+
+Whether customers are building their own AI model, fine-tuning a Foundation Model, or augmenting a Foundation Model with RAG, the process of data collection, curation, and preprocessing forms the bedrock upon which powerful AI applications are built.
+
+Business Driver
+Investing into high-quality, diverse, and well-governed data enables GenAI systems to deliver accurate, relevant, and ethically sound results, driving business value through improved model performance and user trust.
+
+
+Enabling Customers with the Right Data & AI Foundation
+Based on customer interactions during the GenAI PoCs, we can group customers into 2 categories:
+
+Adopters: Customers who are evaluating the GenAI industry use cases but lack a solid data foundation that is impeding their path to production
+Data-Driven: Customers with a solid data foundation who are ready for the path to production
+We need to meet all customers where they are in their data journey to understand customer's current data landscape and data maturity to enable data readiness for generative AI applications. Data Driven Transformation (D2T) enables an understanding of customer's current data maturity, their existing investments on their data landscape, and provide them with prescriptive guidance to build a strong data foundation.
+
+Specific actions to take with Adopters, Data-driven customers, and customers “in between”:
+
+Consider running a Data Strategy Diagnostic workshop: The AWS Data Strategy Diagnostic (a.k.a Data Maturity Assessment) is a rapid test for measuring data, analytics, and AI/ML maturity of your customer. Use the DSD first call deck to introduce the workshop to your customer and start the conversation.
+Ascertain what Data Foundation is required for your customer’s use case GenAI Ready Data Strategy
+Tackle Data Security and Governance up front when architecting your solution:
+Ensure your customer understands the role(s) of the Data Lake and Vector Databases wrt GenAI
+Get help from AGS Data & AI Specialist SAs or the Data Strategy team
+Once the customer has become Data-Driven, it is important to understand the technical and organizational capabilities that impact the ability to adopt AI at scale. It is recommended to leverage the AI Maturity Assessment (AMA) to provide guidance and a mental model for the customer to think through the creation of an AI strategy in alignment with business goals.
+
+
+Data Strategy Foundation Checklist
+High-quality and diverse training data involves crucial steps such as data collection, curation, and preprocessing to help improve the model. Data privacy and ethical concerns must be carefully considered when handling sensitive information. Poor data pipelines and a lack of data quality at scale can hinder the effectiveness of Gen AI  models, necessitating the implementation of robust data pipelines to ensure data integrity and consistency. Regular maintenance and updates of knowledge sources are necessary for accurate and relevant workloads. Leverage  Customer Data Playbook (CDP)  to capture customer’s current data landscape, effectively identify gaps, address key challenges, and develop a clear roadmap to build a strong data foundation.
+
+========================
+
+
+Moving from left to right, we first see customers with operational data stores for their applications. These data stores are often relational but also semi-structured with documents or key/value pair storage. These stores are optimized for application performance with millisecond response times and high-availability being top concerns.
+The next type of store is a relational data warehouse. This is where disparate data is brought together for analysis. A data warehouse helps customers answer questions about their business with a holistic view of the organization.
+Many organizations have also embraced data lakes with structured, semi-structure, and even unstructured data. It too brings all of the data in the organization together for analysis but it expands the scope of the data available. 
+Lastly, we have the data mesh architecture which is an architectural framework that solves advanced data security challenges through distributed, decentralized ownership. Organizations have multiple data sources from different lines of business that must be integrated for analytics. Business functions can maintain control over how shared data is accessed, who accesses it, and in what formats it’s accessed. 
+
+
+Pattern 1 is frequently used by applications. This is where existing data is enhanced by creating vector embeddings for similarity searches. These vector embeddings are created by large language models like Amazon Titan and can be stored along side the relational and/or semi-structured data found in SQL and NOSQL data stores respectively.
+Pattern 2 is used for analytical workloads found in data warehouses and data lakes. 
+Pattern 3 is designing for Unified Lakehouse that includes unified data catalog across data warehouse, data lake and federated sources - and accessible to a variety of analytics engines via open Iceberg compatible APIs
+Pattern 4 is the evolution of these pattern to a data mesh architecture.
+
+Pattern 1; where you store vectors alongside your application data.
+
+A customer may have an existing application where they want to add Generative AI capabilities with similarity searches. A vector embedding makes it possible to understand the meaning of text with similarity comparisons of vectors generated from LLMs. These databases are typically indexed for optimal performance including indexing the vector data. 
+
+As our customers use vectors for their generative AI applications, they told us that they want to use them with their existing databases to eliminate the learning curve for new programming tools, APIs, SDKs.
+
+They also feel more confident knowing their existing databases are proven in production and meet requirements for scalability, availability, storage and compute. 
+
+And when your vectors and business data are stored in the same place, your applications will run faster – and there’s no data sync or data movement to worry about. 
+
+For all of these reasons, we’ve invested in adding vector capabilities to some of our most popular data services.
+
+Now, for those in the audience unfamiliar with semantic context and how that gets derived, here’s a short primer on vector embeddings.
+
+You take your domain-specific data, and break it apart into elements that hold individual meaning in a process called tokenization. 
+
+The elements can be words, phrases, paragraphs, entire documents – whatever makes sense for your use case, such that you can have a set of meaningfully composable elements. You take the elements and pass them through an LLM to derive numerical vectors – essentially arrays of numbers for each element. These vectors place elements with related meaning close to each other in a multi-dimensional vector space. 
+
+Thus, finding meaningfully or semantically related data is reduced to mathematical functions of minimal distance between elements.
+
+When you are using vector elements to represent meaning, in the context of generative AI, these are referred to as “embeddings”. 
+
+Now that you have a better understanding of the options for vector data stores and guidance in broad terms, let’s dive a little deeper.
+
+We want you to have the right framework to make decisions on your own, because the field of vector data stores is evolving rapidly, and the decision you make today based on current information, may not apply even 3 months from now.
+
+<click>
+
+1. So first, you’ve probably noticed in the broad guidance on the previous slide, that familiarity with the data store technology matters. The simple reality today is that most workloads we are currently encountering don’t operate at a scale where the differences between the technical capabilities of the engines themselves matter a lot. But as with any emergent technology, cost and speed to market matter more, so try to reuse as much as possible the skills you have, and minimize complexity of the solution.
+
+<click>
+
+2. Which brings us to ease of use, it’s somewhat related to familiarity. It is a consideration of how well the database engine you are considering abstract away underlying complexity with respect to managing interactions with vectors.
+
+<click>
+
+3. Next is scalability – similar considerations apply here as with any other database, but there are 2 separate dimensions here that are unique to vector databases. 1) the number of dimensions supported in a vector; 2) how many embeddings it can realistically handle with reasonable performance in similarity searches.
+
+<click>
+
+4. As with any application performance matters here too. There are two performance metrics that are relevant here for vector data stores, and they are inter-related. One is QPS – queries per second – how many potentially concurrent similarity searches you can conduct per unit time, the other is recall rate or the rate in which approximate similarity searches can be performed.
+<click>
+
+5. Finally – consider also the flexibility the data store provides. Does it provide multiple search algorithms? Multiple indexing algorithms? These of course affect performance, too.
+
+
+Pattern 2
+Building generative AI applications requires the typical capabilities of a data foundation to evolve and scale for:
+1/Better and easier ways to ingest and share data.
+2/A unified data integration and data processing experience for developers
+3/Workflow orchestration tools for data engineers and data scientists
+4/Data stores with vector capabilities 
+5/End-to-end data governance for quality, reliability and access control
+6/and a way to quickly go from concept to market with generative AI applications.
+
+A conventional data pipeline with the typical ingestion, processing, integration, transformation and governance components. 
+
+Lets see how the scope of some of the simple data pipeline components is influenced when you build a generative AI application. 
+
+Existing data pipeline data can still be used by GenAI application
+
+
+One of the very first things that gen AI introduces to the pipeline is the need for additional data sources. And these are primarily in the form of unstructured data. Now, unstructured data is not a new construct to the data world, however it is now the dominant part of the data feed for a gen AI pipeline. Our typical data architecture patterns have largely dealt with structured data, but with more than 80% of the world’s data in unstructured formats, it is now front and center with gen AI, and has a big influence on data ingestion, data integration and data governance. 
+Unstructured data is information that doesn’t conform to a predefined schema or isn’t organized according to a preset data model. Understanding the data, categorizing it, and extracting insights from it can be challenging. Metadata discovery is one of the primary requirements in data analytics.
+
+Customers may be using call transcripts/PDFs etc …so you were not able to derive insights without GenAI
+
+You could be working with feature engineering to extract information from data in your data warehouse or data lake, to represent it in a way that makes it easier for ML algorithms to learn from. 
+Or you could be running inference for your continued pre-training approach to draw new conclusions for a more effective response from your gen AI application. 
+Or managing vector data for a RAG based application to provide real-time, meaningful context.
+All this processing requires advanced forms of data integration and data stores. 
+
+Some gen AI applications also incorporate advanced learning techniques such as Reinforcement learning from human feedback (RLHF), a machine learning (ML) technique that uses human feedback to optimize ML models. Similarly, these applications will also need to capture user input data in real time for a highly personalized and accurate response. Capturing this information in the right kind of data stores with efficient pipelines helps with latency and accuracy.
+
+
+Pattern 4
+So data architecture pattern lands the data in data lake house. Customers may have many applications and data owners who do not know how and who to share data with, similarly there may be many consumer groups/departments who do now know what data is available, who to submit request to access the data and there are questions about standards and quality of data available. So data architecture pattern 3 intends to address these requirements using data mesh architecture.
+
+Data Sharing is at the core of this data architecture pattern - Using data sharing, your gen AI applications can also access 100s of data products within their own organizations and from AWS data market place that are published by third party providers like equinox, s&p global, factset
+
+Your data producers populate the business data catalog with data assets and also enrich them with business context for data consumers to understand. Your consumers such as gen AI applications can search and access this data by requesting subscriptions. When the request is approved, they can start querying the data
+
+Data governance has multiple dimensions including building a technical data catalog with information on data format, partitioning, location, format and more. 
+
+While using your data to customize gen AI applications, you need to ensure that privacy and compliance requirements are met. You also need to ensure that your gen AI applications can easily find the data they need. Data governance frameworks help with that. 
+
+So using data mesh, customers enable self-serving data culture within their organizations.
+
+
+
+
+
+
+
+
