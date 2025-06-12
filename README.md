@@ -241,3 +241,5 @@ Step Functions orchestrates everything, making sure our pipeline runs smoothly a
 
 Finally, EventBridge Scheduler , Triggers our Step Functions workflow on a configurable schedule like hour, daily, or any interval you need
 
+
+![image](https://github.com/user-attachments/assets/90cd2e35-9ad5-4d76-853b-d409498627b8)
